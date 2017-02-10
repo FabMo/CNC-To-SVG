@@ -45,6 +45,20 @@ function footer() {
 }
 
 /**
+ * Calculate the scale for drawing the path. It is useful for having the path
+ * using the whole drawing space.
+ *
+ * @param {number} gcodeWidth - The width of the G-Code generated path.
+ * @param {number} gcodeHeight - The height of the G-Code generated path.
+ * @param {number} svgWidth - The SVG width.
+ * @param {number} svgHeight - The SVG height.
+ * @return {number} The scale.
+ */
+function calculateScale(gcodeWidth, gcodeHeight, svgWidth, svgHeight) {
+    return Math.min(svgWidth / gcodeWidth, svgHeight / gcodeHeight);
+}
+
+/**
  * Generates an SVG file representing the path made by the G-Code commands.
  *
  * @param {string} gcodeCommands - The G-Code commands.
@@ -57,6 +71,10 @@ function footer() {
  * @return {string} An empty string if there is an error, else the SVG.
  */
 function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
+    width = Math.abs(width);
+    height = Math.abs(height);
+    lineThickness = Math.abs(lineThickness);
+
     if(gcodeCommands === "") {
         return "";
     }
@@ -67,6 +85,8 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     if(gcodeWidth === 0 || gcodeHeight === 0) {
         return "";
     }
+
+    var scale = calculateScale(gcodeWidth, gcodeHeight, width, height);
 
     return header(title, width, height) + footer();
 }
