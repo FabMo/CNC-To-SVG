@@ -80,7 +80,7 @@ function pointToSVGPoint(point, size, scale) {
     return {
         x : point.x - size.min.x,
         y : size.max.y - point.y
-    }
+    };
 }
 
 /**
@@ -116,6 +116,32 @@ function curvedPath(beziers, color, lineThickness, gcodeSize, scale) {
 }
 
 /**
+ * Generates the SVG path. If the color is undefined, no path is generated.
+ *
+ * @param {[objects]} lines - The lines composing the path.
+ * @param {Colors} colors - The colors for displaying the path according to the
+ * command.
+ * @param {number} lineThickness - The SVG line thickness (in pixels).
+ * @param {object} gcodeSize - The G-Code size.
+ * @param {number} scale - The scaling ratio.
+ * @param {string} type - The G-Code command type.
+ * @return {string} The SVG path or an empty string if the color is undefined.
+ */
+function path(lines, colors, lineThickness, gcodeSize, scale, type) {
+    if(type === "G0" && colors.G0 !== undefined) {
+        return straightPath(lines, colors.G0, lineThickness, gcodeSize, scale);
+    }
+    if(type === "G1" && colors.G1 !== undefined) {
+        return straightPath(lines, colors.G1, lineThickness, gcodeSize, scale);
+    }
+    if((type === "G2" || type === "G3") && colors.G2G3 !== undefined) {
+        return curvedPath(lines, colors.G2G3, lineThickness, gcodeSize, scale);
+    }
+    return "";
+}
+
+
+/**
  * Generates an SVG file representing the path made by the G-Code commands.
  *
  * @param {string} gcodeCommands - The G-Code commands.
@@ -130,7 +156,7 @@ function curvedPath(beziers, color, lineThickness, gcodeSize, scale) {
 function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     width = Math.abs(width);
     height = Math.abs(height);
-    lineThickness = Math.abs(lineThickness);
+    lineThickness = (lineThickness !== undefined) ? Math.abs(lineThickness) : 2;
 
     if(gcodeCommands === "") {
         return "";
@@ -144,8 +170,30 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     }
 
     var scale = calculateScale(gcodeWidth, gcodeHeight, width, height);
+    var currentType = gcode.lines[0].type;
+    var svgPaths = [];
+    var lines = [];
+    var line;
+    var i;
 
-    return header(title, width, height) + footer();
+    for(i = 0; i < gcode.length; i++) {
+        line = gcode.lines[i];
+        if(currentType !== line.type) {
+            svgPaths.push(
+                path(lines, colors, lineThickness, gcode.size, scale, currentType)
+            );
+            lines = [];
+            currentType = line.type;
+        }
+        lines.push(line.lines);
+    }
+    if(lines.length > 0) {
+        svgPaths.push(
+            path(lines, colors, lineThickness, gcode.size, scale, currentType)
+        );
+    }
+
+    return header(title, width, height) + svgPaths.join("\n\n") + footer();
 }
 
 exports.createSVG = createSVG;
