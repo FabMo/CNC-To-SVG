@@ -84,34 +84,30 @@ function pointToSVGPoint(point, size, scale) {
 }
 
 /**
- * Generates the SVG path for a path only composed by straight lines. In
+ * Generates the SVG path data for a path only composed by straight lines. In
  * general, this path should correspond to a G0 or a G1 consecutive set of
- * commands. If the color is undefined, no path is generated.
+ * commands.
  *
  * @param {[objects]} lines - The lines composing the path.
- * @param {string} color - The path color.
- * @param {number} lineThickness - The SVG line thickness (in pixels).
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
-function straightPath(lines, color, lineThickness, gcodeSize, scale) {
+function straightPathData(lines, gcodeSize, scale) {
     return "";
 }
 
 /**
- * Generates the SVG path for a path only composed by curved lines. In
+ * Generates the SVG path data for a path only composed by curved lines. In
  * general, this path should correspond to a G2 and G3 consecutive set of
- * commands. If the color is undefined, no path is generated.
+ * commands.
  *
  * @param {[objects]} beziers - The Bézier lines composing the path.
- * @param {string} color - The path color.
- * @param {number} lineThickness - The SVG line thickness (in pixels).
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
-function curvedPath(beziers, color, lineThickness, gcodeSize, scale) {
+function curvedPathData(beziers, gcodeSize, scale) {
     return "";
 }
 
@@ -128,16 +124,27 @@ function curvedPath(beziers, color, lineThickness, gcodeSize, scale) {
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
 function path(lines, colors, lineThickness, gcodeSize, scale, type) {
+    var data = "";
+    var color = "";
     if(type === "G0" && colors.G0 !== undefined) {
-        return straightPath(lines, colors.G0, lineThickness, gcodeSize, scale);
+        data = straightPathData(lines, gcodeSize, scale);
+        color = colors.G0;
     }
-    if(type === "G1" && colors.G1 !== undefined) {
-        return straightPath(lines, colors.G1, lineThickness, gcodeSize, scale);
+    else if(type === "G1" && colors.G1 !== undefined) {
+        data = straightPathData(lines, gcodeSize, scale);
+        color = colors.G1;
     }
-    if((type === "G2" || type === "G3") && colors.G2G3 !== undefined) {
-        return curvedPath(lines, colors.G2G3, lineThickness, gcodeSize, scale);
+    else if((type === "G2" || type === "G3") && colors.G2G3 !== undefined) {
+        data = curvedPathData(lines, gcodeSize, scale);
+        color = colors.G2G3;
     }
-    return "";
+
+    if(data === "") {
+        return "";
+    }
+    return '<path style="fill:none;stroke:' + color +
+        ';stroke-width:' + lineThickness + 'px;"' +
+        ' d="' + data + '" />';
 }
 
 
