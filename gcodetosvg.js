@@ -22,6 +22,29 @@ var gcodetogeometry = require("gcodetogeometry");
  */
 
 /**
+ * Generates the SVG header.
+ * @param {string} title - The SVG title.
+ * @param {number} width - The SVG width (in pixels).
+ * @param {number} height - The SVG height (in pixels).
+ * @return {string} The SVG header.
+ */
+function header(title, width, height) {
+    var h = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n';
+    h += '<svg xmlns="http://www.w3.org/2000/svg" ';
+    h += 'width="' + width + 'px" height="' + height + 'px">\n';
+    h += '  <title>' + title + '</title>\n';
+    return h;
+}
+
+/**
+ * Generates the SVG footer.
+ * @return {string} The SVG footer.
+ */
+function footer() {
+    return "</svg>";
+}
+
+/**
  * Generates an SVG file representing the path made by the G-Code commands.
  *
  * @param {string} gcodeCommands - The G-Code commands.
@@ -34,7 +57,7 @@ var gcodetogeometry = require("gcodetogeometry");
  * @return {string} An empty string if there is an error, else the SVG.
  */
 function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
-    return "";
+    return header(title, width, height) + footer();
 }
 
 exports.createSVG = createSVG;
