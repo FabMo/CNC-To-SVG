@@ -84,6 +84,38 @@ function pointToSVGPoint(point, size, scale) {
 }
 
 /**
+ * Generates the SVG path for a path only composed by straight lines. In
+ * general, this path should correspond to a G0 or a G1 consecutive set of
+ * commands. If the color is undefined, no path is generated.
+ *
+ * @param {[objects]} lines - The lines composing the path.
+ * @param {string} color - The path color.
+ * @param {number} lineThickness - The SVG line thickness (in pixels).
+ * @param {object} gcodeSize - The G-Code size.
+ * @param {number} scale - The scaling ratio.
+ * @return {string} The SVG path or an empty string if the color is undefined.
+ */
+function straightPath(lines, color, lineThickness, gcodeSize, scale) {
+    return "";
+}
+
+/**
+ * Generates the SVG path for a path only composed by curved lines. In
+ * general, this path should correspond to a G2 and G3 consecutive set of
+ * commands. If the color is undefined, no path is generated.
+ *
+ * @param {[objects]} beziers - The Bézier lines composing the path.
+ * @param {string} color - The path color.
+ * @param {number} lineThickness - The SVG line thickness (in pixels).
+ * @param {object} gcodeSize - The G-Code size.
+ * @param {number} scale - The scaling ratio.
+ * @return {string} The SVG path or an empty string if the color is undefined.
+ */
+function curvedPath(beziers, color, lineThickness, gcodeSize, scale) {
+    return "";
+}
+
+/**
  * Generates an SVG file representing the path made by the G-Code commands.
  *
  * @param {string} gcodeCommands - The G-Code commands.
