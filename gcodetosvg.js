@@ -114,13 +114,32 @@ function straightPathData(lines, gcodeSize, scale) {
  * general, this path should correspond to a G2 and G3 consecutive set of
  * commands.
  *
- * @param {[objects]} beziers - The Bézier lines composing the path.
+ * @param {[objects]} lines - The lines composing the path.
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
-function curvedPathData(beziers, gcodeSize, scale) {
-    return "";
+function curvedPathData(lines, gcodeSize, scale) {
+    if(lines.length === 0) {
+        return "";
+    }
+    var point = pointToSVGPoint(lines[0].beziers[0].p0, gcodeSize, scale);
+    var data = "M" + point.x + "," + point.y;
+    var i = 0;
+    var j = 0;
+    var line;
+    for(i = 0; i < lines.length; i++) {
+        line = lines[i];
+        for(j = 0; j < line.beziers.length; j++) {
+            point = pointToSVGPoint(line.beziers[j].p1, gcodeSize, scale);
+            data += " C" + point.x + "," + point.y;
+            point = pointToSVGPoint(line.beziers[j].p2, gcodeSize, scale);
+            data += " " + point.x + "," + point.y;
+            point = pointToSVGPoint(line.beziers[j].p3, gcodeSize, scale);
+            data += " " + point.x + "," + point.y;
+        }
+    }
+    return data;
 }
 
 /**
