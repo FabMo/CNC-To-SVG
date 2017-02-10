@@ -94,7 +94,19 @@ function pointToSVGPoint(point, size, scale) {
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
 function straightPathData(lines, gcodeSize, scale) {
-    return "";
+    if(lines.length === 0) {
+        return "";
+    }
+    var point = pointToSVGPoint(lines[0].start, gcodeSize, scale);
+    var data = "M" + point.x + "," + point.y;
+    var i = 1;
+    for(i = 1; i < lines.length - 1; i++) {
+        point = pointToSVGPoint(lines[i].start, gcodeSize, scale);
+        data += " L" + point.x + "," + point.y;
+    }
+    point = pointToSVGPoint(lines[lines.length-1].start, gcodeSize, scale);
+    data += " L" + point.x + "," + point.y;
+    return data;
 }
 
 /**
@@ -147,7 +159,6 @@ function path(lines, colors, lineThickness, gcodeSize, scale, type) {
         ' d="' + data + '" />';
 }
 
-
 /**
  * Generates an SVG file representing the path made by the G-Code commands.
  *
@@ -183,7 +194,7 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     var line;
     var i;
 
-    for(i = 0; i < gcode.length; i++) {
+    for(i = 0; i < gcode.lines.length; i++) {
         line = gcode.lines[i];
         if(currentType !== line.type) {
             svgPaths.push(
@@ -192,7 +203,7 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
             lines = [];
             currentType = line.type;
         }
-        lines.push(line.lines);
+        lines.push(line);
     }
     if(lines.length > 0) {
         svgPaths.push(
