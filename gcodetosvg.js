@@ -57,6 +57,17 @@ function footer() {
  * @return {string} An empty string if there is an error, else the SVG.
  */
 function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
+    if(gcodeCommands === "") {
+        return "";
+    }
+
+    var gcode = gcodetogeometry.parse(gcodeCommands);
+    var gcodeWidth = gcode.size.max.x - gcode.size.min.x;
+    var gcodeHeight = gcode.size.max.y - gcode.size.min.y;
+    if(gcodeWidth === 0 || gcodeHeight === 0) {
+        return "";
+    }
+
     return header(title, width, height) + footer();
 }
 
