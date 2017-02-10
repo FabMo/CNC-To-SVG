@@ -22,6 +22,14 @@ var gcodetogeometry = require("gcodetogeometry");
  */
 
 /**
+ * 2D point.
+ *
+ * @typedef {object} Point
+ * @property {number} x - The x coordinate.
+ * @property {number} y - The y coordinate.
+ */
+
+/**
  * Generates the SVG header.
  * @param {string} title - The SVG title.
  * @param {number} width - The SVG width (in pixels).
@@ -56,6 +64,23 @@ function footer() {
  */
 function calculateScale(gcodeWidth, gcodeHeight, svgWidth, svgHeight) {
     return Math.min(svgWidth / gcodeWidth, svgHeight / gcodeHeight);
+}
+
+/**
+ * Converts a coordinate point to an image point. Used to scale the image and
+ * avoid being upside down.
+ *
+ * @param {Point} point - The point.
+ * @param {object} size - The G-Code path size.
+ * @param {number} scale - The scaling ratio.
+ * @return {Point} The converted coordinate.
+ */
+function pointToSVGPoint(point, size, scale) {
+    // TODO: use scale
+    return {
+        x : point.x - size.min.x,
+        y : size.max.y - point.y
+    }
 }
 
 /**
