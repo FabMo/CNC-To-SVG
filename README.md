@@ -6,11 +6,11 @@ will take if the code is executed.
 
 So far, **only G-Code is considered**. OpenSBP will be implemented later.
 
-This app uses the [Gcode-To-Geometry
+This node module uses the [Gcode-To-Geometry
 application](https://github.com/ShopBotTools/G-Code-To-Geometry). The supported
 G-Code commands and behaviour are listed there.
 
-This app is under Apachage Licence Version 2.0, see the file ``LICENSE`` and
+This module is under Apachage Licence Version 2.0, see the file ``LICENSE`` and
 ``NOTICE``. See the license of used library.
 
 Usage
@@ -52,3 +52,25 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness)
 
 You can save the SVG data in a file (``path.svg`` for example). Example usage
 can be found in ``tests.js`` file.
+
+## License
+
+For this module.
+
+```
+   Copyright 2017 Alex Canales
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+```
+
+For the dependencies, check out there repositories.
