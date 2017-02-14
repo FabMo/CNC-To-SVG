@@ -1,9 +1,9 @@
 {
-    "name": "gcodesvg",
+    "name": "CNC to SVG",
     "version": "1.0.0",
     "description": " Generates SVG from G-Code code.",
     "preferGlobal": "false",
-    "main": "gcodetosvg.js",
+    "main": "cnctosvg.js",
     "author": "Alex Canales",
     "license": "Apache License 2.0",
     "keywords": ["gcode", "g-code", "svg"],

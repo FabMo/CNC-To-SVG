@@ -76,7 +76,6 @@ function calculateScale(gcodeWidth, gcodeHeight, svgWidth, svgHeight) {
  * @return {Point} The converted coordinate.
  */
 function pointToSVGPoint(point, size, scale) {
-    // TODO: use scale
     return {
         x : scale * (point.x - size.min.x),
         y : scale * (size.max.y - point.y)

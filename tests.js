@@ -1,5 +1,5 @@
 /*jslint todo: true, browser: true, continue: true, white: true*/
-var gcodetosvg = require("./gcodetosvg.js");
+var cnctosvg = require("./cnctosvg.js");
 
 // Settings parameters
 var colors = { G1 : '#000000', G2G3 : "#000000" };
@@ -17,5 +17,5 @@ code += "G3 X1.6 R0.8 F91.1\n";
 code += "G3 X0.4 R0.8\n";
 code += "G1 Z1\n";
 
-var svg = gcodetosvg.createSVG(code, colors, "Illerminaty", 300, 300);
+var svg = cnctosvg.createSVG(code, colors, "Illerminaty", 300, 300);
 console.log(svg);
