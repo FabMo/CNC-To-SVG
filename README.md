@@ -13,6 +13,10 @@ G-Code commands and behaviour are listed there.
 This module is under Apachage Licence Version 2.0, see the file ``LICENSE`` and
 ``NOTICE``. See the license of used library.
 
+To install the module, go in your project and do.
+
+    npm install cnctosvg
+
 Usage
 -----
 
