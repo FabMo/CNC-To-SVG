@@ -50,8 +50,19 @@ For generating SVG data, you only have to use ``createSVG`` function.
 function createSVG(gcodeCommands, colors, title, width, height, lineThickness)
 ```
 
-You can save the SVG data in a file (``path.svg`` for example). Example usage
-can be found in ``tests.js`` file.
+You can save the SVG data in a file (``path.svg`` for example).
+
+Example
+-------
+
+Example usage can be found in ``tests.js`` file. This file generate SVG data
+from a G-Code sample. To see the result.
+
+    node tests.js
+
+If you want to save the result in an SVG file.
+
+    node tests.js > result.svg
 
 ## License
 
