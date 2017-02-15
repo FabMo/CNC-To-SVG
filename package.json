@@ -1,14 +1,18 @@
 {
     "name": "CNC to SVG",
     "version": "1.0.0",
-    "description": " Generates SVG from G-Code code.",
+    "description": "Generates SVG data from CNC language commands.",
     "preferGlobal": "false",
     "main": "cnctosvg.js",
     "author": "Alex Canales",
     "license": "Apache License 2.0",
-    "keywords": ["gcode", "g-code", "svg"],
+    "keywords": ["gcode", "g-code", "svg", "cnc"],
     "dependencies": {
         "gcodetogeometry" : "1.0.x"
+    },
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/FabMo/CNC-To-SVG.git"
     },
     "engines": { "node": "*" }
 }
