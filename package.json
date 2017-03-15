@@ -1,6 +1,6 @@
 {
     "name": "cnctosvg",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Generates SVG data from CNC language commands.",
     "preferGlobal": "false",
     "main": "cnctosvg.js",
