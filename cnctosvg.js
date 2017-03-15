@@ -9,6 +9,11 @@
 var fs = require("fs");
 var gcodetogeometry = require("gcodetogeometry");
 
+/**
+ * Version number.
+ */
+exports.VERSION = 1;
+
 /*
  * The colors for displaying G0, G1, G2 and G3 commands, each field is a string
  * of an hexadecimal color (ex: "#ff00ff"). If one field is undefined, the
@@ -143,6 +148,9 @@ function curvedPathData(lines, gcodeSize, scale) {
 
 /**
  * Generates the SVG path. If the color is undefined, no path is generated.
+ *
+ * The function optimizes the path generation: all lines should be consecutive
+ * and should have the same type, else undefined behaviour will occur.
  *
  * @param {[objects]} lines - The lines composing the path.
  * @param {Colors} colors - The colors for displaying the path according to the

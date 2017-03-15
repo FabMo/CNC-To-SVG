@@ -20,6 +20,8 @@ To install the module, go in your project and do.
 Usage
 -----
 
+You can check the module version number through ``VERSION``.
+
 A type ``Colors`` is defined.
 
 ```javascript
