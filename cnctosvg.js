@@ -51,6 +51,7 @@ function header(title, width, height) {
 
 /**
  * Generates the SVG footer.
+ *
  * @return {string} The SVG footer.
  */
 function footer() {
@@ -58,16 +59,30 @@ function footer() {
 }
 
 /**
- * Calculate the scale for drawing the path. It is useful for having the path
- * using the whole drawing space.
+ * Calculates the scale for drawing the path. It is useful for having the path
+ * using the whole drawing space. Undefined behaviour if the parameters are not
+ * positive numbers.
  *
  * @param {number} gcodeWidth - The width of the G-Code generated path.
  * @param {number} gcodeHeight - The height of the G-Code generated path.
  * @param {number} svgWidth - The SVG width.
  * @param {number} svgHeight - The SVG height.
- * @return {number} The scale.
+ * @return {number} The scale or 0 if both G-Code width and height are equal
+ *   to 0 or if the SVG width or height is equal to 0.
  */
 function calculateScale(gcodeWidth, gcodeHeight, svgWidth, svgHeight) {
+    if(
+        (gcodeWidth === 0 && gcodeHeight === 0) ||
+        (svgWidth === 0 || svgHeight === 0)
+    ) {
+        return 0;
+    }
+    if(gcodeWidth === 0) {
+        return svgHeight / gcodeHeight;
+    }
+    if(gcodeHeight === 0) {
+        return svgWidth / gcodeWidth;
+    }
     return Math.min(svgWidth / gcodeWidth, svgHeight / gcodeHeight);
 }
 
@@ -103,13 +118,11 @@ function straightPathData(lines, gcodeSize, scale) {
     }
     var point = pointToSVGPoint(lines[0].start, gcodeSize, scale);
     var data = "M" + point.x + "," + point.y;
-    var i = 1;
-    for(i = 1; i < lines.length - 1; i++) {
-        point = pointToSVGPoint(lines[i].start, gcodeSize, scale);
+    var i = 0;
+    for(i = 0; i < lines.length; i++) {
+        point = pointToSVGPoint(lines[i].end, gcodeSize, scale);
         data += " L" + point.x + "," + point.y;
     }
-    point = pointToSVGPoint(lines[lines.length-1].start, gcodeSize, scale);
-    data += " L" + point.x + "," + point.y;
     return data;
 }
 
@@ -154,7 +167,7 @@ function curvedPathData(lines, gcodeSize, scale) {
  *
  * @param {[objects]} lines - The lines composing the path.
  * @param {Colors} colors - The colors for displaying the path according to the
- * command.
+ *   command.
  * @param {number} lineThickness - The SVG line thickness (in pixels).
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
@@ -188,9 +201,13 @@ function path(lines, colors, lineThickness, gcodeSize, scale, type) {
 /**
  * Generates an SVG file representing the path made by the G-Code commands.
  *
+ * If gcodeCommands is an empty string or if width or height is equal to 0, the
+ * function returns an empty string.  If the G-Code command creates a job with
+ * no 2D size (size on X or Y axis), it returns an SVG with nothing in it.
+ *
  * @param {string} gcodeCommands - The G-Code commands.
  * @param {Colors} colors - The colors for displaying the path according to the
- * command.
+ *   command.
  * @param {string} title - The SVG title.
  * @param {number} width - The SVG width (in pixels).
  * @param {number} height - The SVG height (in pixels).
@@ -202,15 +219,15 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     height = Math.abs(height);
     lineThickness = (lineThickness !== undefined) ? Math.abs(lineThickness) : 2;
 
-    if(gcodeCommands === "") {
+    if(gcodeCommands === "" || width === 0 || height === 0) {
         return "";
     }
 
     var gcode = gcodetogeometry.parse(gcodeCommands);
     var gcodeWidth = gcode.size.max.x - gcode.size.min.x;
     var gcodeHeight = gcode.size.max.y - gcode.size.min.y;
-    if(gcodeWidth === 0 || gcodeHeight === 0) {
-        return "";
+    if(gcodeWidth === 0 && gcodeHeight === 0) {
+        return header(title, width, height) + footer();
     }
 
     var scale = calculateScale(gcodeWidth, gcodeHeight, width, height);
