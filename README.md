@@ -20,7 +20,9 @@ To install the module, go in your project and do.
 Usage
 -----
 
-You can check the module version number through ``VERSION``.
+You can check the module version number through ``VERSION``. For simplifying
+usage, ``VERSION`` follows this rule: every major versions add 1000 and every
+other versions (minor or patch) add 1.
 
 A type ``Colors`` is defined.
 

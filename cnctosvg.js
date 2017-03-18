@@ -10,9 +10,10 @@ var fs = require("fs");
 var gcodetogeometry = require("gcodetogeometry");
 
 /**
- * Version number.
+ * Version number. Every major versions add 1000, every other versions (minor
+ * or patch) add 1.
  */
-exports.VERSION = 1;
+exports.VERSION = 1003;
 
 /*
  * The colors for displaying G0, G1, G2 and G3 commands, each field is a string
