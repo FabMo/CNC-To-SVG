@@ -1,0 +1,4 @@
+tests
+*.swp
+*.svg
+node_modules
