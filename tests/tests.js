@@ -9,7 +9,7 @@ function testFile(title, colors, width, height) {
         if (err) {
             return console.log(err);
         }
-        var svg = cnctosvg.createSVG(code, colors, title, width, height);
+        var svg = cnctosvg.createSVG(code, colors, title, width, height, 2, true);
         fs.writeFile(title + ".svg", svg, "utf8", function(err) {
             if(err) {
                 console.log("Cannot write " + title + ".svg file.");

@@ -88,18 +88,36 @@ function calculateScale(gcodeWidth, gcodeHeight, svgWidth, svgHeight) {
 }
 
 /**
+ * Calculates the margin for centering the path in the image.
+ *
+ * @param {number} scale - The scaling ratio.
+ * @param {number} gcodeWidth - The width of the G-Code generated path.
+ * @param {number} gcodeHeight - The height of the G-Code generated path.
+ * @param {number} svgWidth - The SVG width.
+ * @param {number} svgHeight - The SVG height.
+ * @return {Point} The margin.
+ */
+function calculateMargin(scale, gcodeWidth, gcodeHeight, width, height) {
+    return {
+        x : (width - gcodeWidth * scale) / 2,
+        y : (height - gcodeHeight * scale) / 2,
+    };
+}
+
+/**
  * Converts a coordinate point to an image point. Used to scale the image and
  * avoid being upside down.
  *
  * @param {Point} point - The point.
  * @param {object} size - The G-Code path size.
  * @param {number} scale - The scaling ratio.
+ * @param {Point} margin - The margin.
  * @return {Point} The converted coordinate.
  */
-function pointToSVGPoint(point, size, scale) {
+function pointToSVGPoint(point, size, scale, margin) {
     return {
-        x : scale * (point.x - size.min.x),
-        y : scale * (size.max.y - point.y)
+        x : margin.x + scale * (point.x - size.min.x),
+        y : margin.y + scale * (size.max.y - point.y)
     };
 }
 
@@ -111,17 +129,18 @@ function pointToSVGPoint(point, size, scale) {
  * @param {[objects]} lines - The lines composing the path.
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
+ * @param {Point} margin - The margin.
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
-function straightPathData(lines, gcodeSize, scale) {
+function straightPathData(lines, gcodeSize, scale, margin) {
     if(lines.length === 0) {
         return "";
     }
-    var point = pointToSVGPoint(lines[0].start, gcodeSize, scale);
+    var point = pointToSVGPoint(lines[0].start, gcodeSize, scale, margin);
     var data = "M" + point.x + "," + point.y;
     var i = 0;
     for(i = 0; i < lines.length; i++) {
-        point = pointToSVGPoint(lines[i].end, gcodeSize, scale);
+        point = pointToSVGPoint(lines[i].end, gcodeSize, scale, margin);
         data += " L" + point.x + "," + point.y;
     }
     return data;
@@ -135,13 +154,14 @@ function straightPathData(lines, gcodeSize, scale) {
  * @param {[objects]} lines - The lines composing the path.
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
+ * @param {Point} margin - The margin.
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
-function curvedPathData(lines, gcodeSize, scale) {
+function curvedPathData(lines, gcodeSize, scale, margin) {
     if(lines.length === 0) {
         return "";
     }
-    var point = pointToSVGPoint(lines[0].beziers[0].p0, gcodeSize, scale);
+    var point = pointToSVGPoint(lines[0].beziers[0].p0, gcodeSize, scale, margin);
     var data = "M" + point.x + "," + point.y;
     var i = 0;
     var j = 0;
@@ -149,11 +169,11 @@ function curvedPathData(lines, gcodeSize, scale) {
     for(i = 0; i < lines.length; i++) {
         line = lines[i];
         for(j = 0; j < line.beziers.length; j++) {
-            point = pointToSVGPoint(line.beziers[j].p1, gcodeSize, scale);
+            point = pointToSVGPoint(line.beziers[j].p1, gcodeSize, scale, margin);
             data += " C" + point.x + "," + point.y;
-            point = pointToSVGPoint(line.beziers[j].p2, gcodeSize, scale);
+            point = pointToSVGPoint(line.beziers[j].p2, gcodeSize, scale, margin);
             data += " " + point.x + "," + point.y;
-            point = pointToSVGPoint(line.beziers[j].p3, gcodeSize, scale);
+            point = pointToSVGPoint(line.beziers[j].p3, gcodeSize, scale, margin);
             data += " " + point.x + "," + point.y;
         }
     }
@@ -172,22 +192,23 @@ function curvedPathData(lines, gcodeSize, scale) {
  * @param {number} lineThickness - The SVG line thickness (in pixels).
  * @param {object} gcodeSize - The G-Code size.
  * @param {number} scale - The scaling ratio.
+ * @param {Point} margin - The margin.
  * @param {string} type - The G-Code command type.
  * @return {string} The SVG path or an empty string if the color is undefined.
  */
-function path(lines, colors, lineThickness, gcodeSize, scale, type) {
+function path(lines, colors, lineThickness, gcodeSize, scale, margin, type) {
     var data = "";
     var color = "";
     if(type === "G0" && colors.G0 !== undefined) {
-        data = straightPathData(lines, gcodeSize, scale);
+        data = straightPathData(lines, gcodeSize, scale, margin);
         color = colors.G0;
     }
     else if(type === "G1" && colors.G1 !== undefined) {
-        data = straightPathData(lines, gcodeSize, scale);
+        data = straightPathData(lines, gcodeSize, scale, margin);
         color = colors.G1;
     }
     else if((type === "G2" || type === "G3") && colors.G2G3 !== undefined) {
-        data = curvedPathData(lines, gcodeSize, scale);
+        data = curvedPathData(lines, gcodeSize, scale, margin);
         color = colors.G2G3;
     }
 
@@ -213,9 +234,12 @@ function path(lines, colors, lineThickness, gcodeSize, scale, type) {
  * @param {number} width - The SVG width (in pixels).
  * @param {number} height - The SVG height (in pixels).
  * @param {number} [lineThickness=2] - The SVG line thickness (in pixels).
+ * @param {boolean} [center=false] - It the path should be center in the image.
  * @return {string} An empty string if there is an error, else the SVG.
  */
-function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
+function createSVG(
+    gcodeCommands, colors, title, width, height, lineThickness, center
+) {
     width = Math.abs(width);
     height = Math.abs(height);
     lineThickness = (lineThickness !== undefined) ? Math.abs(lineThickness) : 2;
@@ -232,6 +256,12 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     }
 
     var scale = calculateScale(gcodeWidth, gcodeHeight, width, height);
+    var margin;
+    if(center !== undefined && center !== false) {
+        margin = calculateMargin(scale, gcodeWidth, gcodeHeight, width, height);
+    } else {
+        margin = { x : 0, y : 0 };
+    }
     var currentType = gcode.lines[0].type;
     var svgPaths = [];
     var lines = [];
@@ -242,7 +272,10 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
         line = gcode.lines[i];
         if(currentType !== line.type) {
             svgPaths.push(
-                path(lines, colors, lineThickness, gcode.size, scale, currentType)
+                path(
+                    lines, colors, lineThickness, gcode.size, scale, margin,
+                    currentType
+                )
             );
             lines = [];
             currentType = line.type;
@@ -251,7 +284,10 @@ function createSVG(gcodeCommands, colors, title, width, height, lineThickness) {
     }
     if(lines.length > 0) {
         svgPaths.push(
-            path(lines, colors, lineThickness, gcode.size, scale, currentType)
+            path(
+                lines, colors, lineThickness, gcode.size, scale, margin,
+                currentType
+            )
         );
     }
 
